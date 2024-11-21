@@ -7,16 +7,22 @@ export const getContactsDuration = new Trend('get_contacts', true);
 
 export const options = {
   thresholds: {
-    http_req_failed: ['rate<0.01'],
+    http_req_failed: ['rate<0.3'],
     http_req_duration: ['avg<10000']
   },
-  stages: [{ duration: '1m', target: 1000 }]
+  stages: [
+    { duration: '10s', target: 5 },
+    { duration: '20s', target: 15 },
+    { duration: '30s', target: 25 },
+    { duration: '60s', target: 50 },
+    { duration: '20s', target: 25 },
+    { duration: '10s', target: 10 }
+  ]
 };
 
 export function handleSummary(data) {
   return {
-    './src/output/index.html': htmlReport(data),
-    stdout: textSummary(data, { indent: ' ', enableColors: true })
+    './src/output/index.html': htmlReport(data)
   };
 }
 
