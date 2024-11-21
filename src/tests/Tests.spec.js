@@ -10,9 +10,7 @@ export const options = {
     http_req_failed: ['rate<0.01'],
     http_req_duration: ['avg<10000']
   },
-  stages: [
-    { duration: '1m', target: 1000 }
-  ]
+  stages: [{ duration: '1m', target: 1000 }]
 };
 
 export function handleSummary(data) {
@@ -23,8 +21,8 @@ export function handleSummary(data) {
 }
 
 export default function () {
-  const baseUrl = 'https://test.k6.io/';
-
+  const baseUrl =
+    'https://api.ajfans.alphacode.com.br/api/categoriafilme/?shopping_id=1388&data=21/11';
   const params = {
     headers: {
       'Content-Type': 'application/json'
@@ -38,6 +36,6 @@ export default function () {
   getContactsDuration.add(res.timings.duration);
 
   check(res, {
-    'get contacts - status 200': () => res.status === OK
+    'get filmes nacoes - status 200': () => res.status === OK
   });
 }
