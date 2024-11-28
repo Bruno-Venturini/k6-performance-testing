@@ -1,4 +1,5 @@
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Trend, Rate } from 'k6/metrics';
@@ -26,14 +27,15 @@ export const options = {
 
 export function handleSummary(data) {
   return {
-    './src/output/index.html': htmlReport(data)
+    './src/output/index.html': htmlReport(data),
+    stdout: textSummary(data, { indent: ' ', enableColors: true })
   };
 }
 
 export default function () {
   const baseUrl =
     'https://api.ajfans.alphacode.com.br/api/categoriafilme/?shopping_id=1388&data=21/11';
-    
+
   const params = {
     headers: {
       'Content-Type': 'application/json'
