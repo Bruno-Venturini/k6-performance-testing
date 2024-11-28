@@ -1,22 +1,26 @@
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import { Trend } from 'k6/metrics';
+import { Trend, Rate } from 'k6/metrics';
 
-export const getContactsDuration = new Trend('get_contacts', true);
+export const durationTrendMetric = new Trend('call_duration_trend', true);
+export const statusRateMetric = new Rate('succesful_calls_rate');
 
 export const options = {
   thresholds: {
-    http_req_failed: ['rate<0.3'],
-    http_req_duration: ['avg<10000']
+    http_req_failed: ['rate<0.12'],
+    http_req_duration: ['p(95)<5700']
   },
   stages: [
-    { duration: '10s', target: 5 },
-    { duration: '20s', target: 15 },
-    { duration: '30s', target: 25 },
-    { duration: '60s', target: 50 },
-    { duration: '20s', target: 25 },
-    { duration: '10s', target: 10 }
+    { duration: '20s', target: 10 },
+    { duration: '20s', target: 60 },
+    { duration: '60s', target: 60 },
+    { duration: '20s', target: 120 },
+    { duration: '60s', target: 120 },
+    { duration: '20s', target: 200 },
+    { duration: '60s', target: 200 },
+    { duration: '20s', target: 300 },
+    { duration: '20s', target: 300 }
   ]
 };
 
@@ -34,14 +38,9 @@ export default function () {
       'Content-Type': 'application/json'
     }
   };
-
-  const OK = 200;
-
   const res = http.get(`${baseUrl}`, params);
+  const isRequestSuccessful = res.status >= 200 && res.status < 300;
 
-  getContactsDuration.add(res.timings.duration);
-
-  check(res, {
-    'get filmes nacoes - status 200': () => res.status === OK
-  });
+  statusRateMetric.add(isRequestSuccessful);
+  durationTrendMetric.add(res.timings.duration);
 }
