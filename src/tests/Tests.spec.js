@@ -33,6 +33,7 @@ export function handleSummary(data) {
 export default function () {
   const baseUrl =
     'https://api.ajfans.alphacode.com.br/api/categoriafilme/?shopping_id=1388&data=21/11';
+    
   const params = {
     headers: {
       'Content-Type': 'application/json'
